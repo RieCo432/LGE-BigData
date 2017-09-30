@@ -2,7 +2,7 @@
 from lxml import html
 from selenium import webdriver
 import json
-from teacher import ClassTeacher
+from shared_stuff import ClassTeacher
 
 driver = webdriver.PhantomJS()
 

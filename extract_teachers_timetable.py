@@ -1,6 +1,6 @@
 # coding=utf-8
 import json
-from teacher import ClassTeacher
+from shared_stuff import ClassTeacher
 
 with open("lessons_list.json", "r") as fin:
     lessons_list = json.load(fin)
