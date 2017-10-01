@@ -1,24 +1,23 @@
 import time
 import json
 from datetime import datetime, timedelta
-from datetime import time
 from apscheduler.schedulers.background import BackgroundScheduler
 from shared_stuff import ClassClass
 import requests
-from pytz import timezone
+from pytz import country_timezones
 
-scheduler = BackgroundScheduler()
+scheduler = BackgroundScheduler(timezone=country_timezones("lu")[0])
 
+scheduler.start()
 
-def push_scheduled_lesson(destination_class, lesson):
+def push_scheduled_lesson(destination_class, lessons):
     fcm = {"address": "https://fcm.googleapis.com/fcm/send", "key": "AIzaSyD0KrIb6z4KSB6nghPtA-bG-rJI4MOMhwo"}
     stdParas = {"targetPackage": "com.colinries.lge"}
     intraPushParas = {"ttl": 600, "collapseKey": "intrapush_lesson", "tag": "intrapush_lesson",
                       "to": "/topics/intrapush" + destination_class}
     postRequestHeaders = {"Content-Type": "application/json", "Authorization": "key=" + fcm["key"]}
 
-    classNotificationPayload = {lesson}
-    classNotificationDataRAW = {"notification": classNotificationPayload,
+    classNotificationDataRAW = {"data": {"lessons": lessons},
                                 "restricted_package_name": stdParas["targetPackage"],
                                 "to": "/topics/intraPush" + class_name,
                                 "time_to_live": 600,
@@ -30,7 +29,7 @@ def push_scheduled_lesson(destination_class, lesson):
     print(classNotificationResult)
 
 
-now = datetime(2017, 9, 30, datetime.now().hour, datetime.now().minute)
+now = datetime(2017, 10, 1, datetime.now().hour, datetime.now().minute)
 
 # temporarily disabled for debugging purposes
 # notification_times = [datetime(now.year, now.month, now.day, 7, 50),
@@ -81,22 +80,15 @@ with open("classes/timetable_" + class_name + ".json", "r") as fin:
 
     all_class_lessons_today = filter(lambda today_lesson: today_lesson["day"] == 0, all_class_lessons)
 
+    new_job = [0,0,0,0,0,0,0,0,0]
+
     for i in range(0, 9):
         all_class_lessons_time = filter(lambda lesson: lesson["time"] == i, all_class_lessons_today)
         if len(all_class_lessons_time) != 0:
-            new_job = scheduler.add_job(push_scheduled_lesson, 'date', run_date=notification_times[i], args=[class_name,
+            new_job[i] = scheduler.add_job(push_scheduled_lesson, 'date', run_date=notification_times[i], args=[class_name,
                                         all_class_lessons_time])
             print(all_class_lessons_time)
-            print(new_job)
+            print(new_job[i])
 
-
-
-        # for lesson in all_class_lessons:
-        #     if lesson["day"] == now.weekday():
-        #         push_function_paras = {
-        #             "subject": lesson["subject"],
-        #             "teacher" : lesson["teacher"],
-        #             "room" :
-        #         }
-        #         scheduler.add_job(push_intranet_notification(), 'date', run_date=notification_times[lesson["time"]],
-        #                       args=[])
+while True:
+    time.sleep(60)

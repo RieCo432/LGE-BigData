@@ -1,6 +1,9 @@
 # Generated JSON files
 *.json
 
+#PyCharm configs
+.idea/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
