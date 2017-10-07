@@ -34,5 +34,6 @@ for class_name in ClassClass.class_list:
 
     new_class_timetable.sort(key=lambda d: d["day"])
 
-    with open("classes/timetable_" + class_name + ".json", "w") as fout:
+    class_timetable_filename = class_name.replace("(", "-").replace(")", "-").replace(" ", "_")
+    with open("classes/timetable_" + class_timetable_filename + ".json", "w") as fout:
         json.dump(new_class_timetable, fout)
