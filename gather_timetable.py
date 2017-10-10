@@ -2,7 +2,7 @@
 from lxml import html
 from selenium import webdriver
 import json
-from shared_stuff import ClassTeacher
+from shared_stuff import ClassTeacher, ClassClass
 
 driver = webdriver.PhantomJS()
 
@@ -18,60 +18,67 @@ teacher_list = ClassTeacher.modify_teacher_list(ClassTeacher.original_teacher_li
 
 lessons_list = []
 
+classes_done = []
+
 for h in range(1, len(class_list) + 1):
-    driver.get("http://lge.lu/horaires/38/c/c" + str(h).zfill(5) + ".htm")
-    tree = html.fromstring(driver.page_source)
 
-    for i in range(2, 17, 2):  # cycle through times
-        for j in range(2, 7):  # cycle through days
+	if not class_list[h-1] in classes_done:
+	
+		driver.get("http://lge.lu/horaires/38/c/c" + str(h).zfill(5) + ".htm")
+		tree = html.fromstring(driver.page_source)
 
-            subject = tree.xpath(
-                "/html/body/center/table[1]/tbody/tr[" + str(i) + "]/td[" + str(j) + "]/table/tbody/tr/td[1]/font/b")
-            teacher = tree.xpath(
-                "/html/body/center/table[1]/tbody/tr[" + str(i) + "]/td[" + str(j) + "]/table/tbody/tr/td[2]/font/b")
-            room = tree.xpath(
-                "/html/body/center/table[1]/tbody/tr[" + str(i) + "]/td[" + str(j) + "]/table/tbody/tr/td[3]/font/b")
+		for i in range(2, 17, 2):  # cycle through times
+			for j in range(2, 7):  # cycle through days
 
-            for k in range(0, len(subject)):
+				subject = tree.xpath(
+					"/html/body/center/table[1]/tbody/tr[" + str(i) + "]/td[" + str(j) + "]/table/tbody/tr/td[1]/font/b")
+				teacher = tree.xpath(
+					"/html/body/center/table[1]/tbody/tr[" + str(i) + "]/td[" + str(j) + "]/table/tbody/tr/td[2]/font/b")
+				room = tree.xpath(
+					"/html/body/center/table[1]/tbody/tr[" + str(i) + "]/td[" + str(j) + "]/table/tbody/tr/td[3]/font/b")
 
-                # if (subject[k] is not None) and (teacher[k] is not None) and (room[k] is not None):
-                # print(subject[0].text, teacher[0].text, room[0].text)
+				for k in range(0, len(subject)):
 
-                new_lesson = {
-                    "day": j - 2,  # compensate for first column
-                    "time": int(i / 2) - 1,  # compensate for empty rows
-                    "class": class_list[h - 1],  # compensate for length=/=last index
-                }
+					# if (subject[k] is not None) and (teacher[k] is not None) and (room[k] is not None):
+					# print(subject[0].text, teacher[0].text, room[0].text)
 
-                try:
-                    new_lesson["subject"] = subject[k].text.strip()
-                except IndexError:
-                    new_lesson["subject"] = "None"
+					new_lesson = {
+						"day": j - 2,  # compensate for first column
+						"time": int(i / 2) - 1,  # compensate for empty rows
+						"class": class_list[h - 1],  # compensate for length=/=last index
+					}
 
-                try:
-                    shorted_teacher = teacher[k].text.split()
-                    for teacher_name in teacher_list:
-                        if teacher_name[0] == shorted_teacher[0] and teacher_name[1] == shorted_teacher[1]:
-                            new_lesson["teacher"] = teacher_name
-                except IndexError:
-                    new_lesson["teacher"] = "None"
+					try:
+						new_lesson["subject"] = subject[k].text.strip()
+					except IndexError:
+						new_lesson["subject"] = "None"
 
-                try:
-                    new_lesson["room"] = room[k].text.strip()
-                except IndexError:
-                    new_lesson["room"] = "None"
+					try:
+						shorted_teacher = teacher[k].text.split()
+						for teacher_name in teacher_list:
+							if teacher_name[0] == shorted_teacher[0] and teacher_name[1] == shorted_teacher[1]:
+								new_lesson["teacher"] = teacher_name
+					except IndexError:
+						new_lesson["teacher"] = "None"
 
-                lessons_list.append(new_lesson)
+					try:
+						new_lesson["room"] = room[k].text.strip()
+					except IndexError:
+						new_lesson["room"] = "None"
 
-            if len(subject) == 0 and (int(i / 2) - 1 == 4 or int(i / 2) - 1 == 5):
-                new_lunch_break = {
-                    "day": j - 2,  # compensate for first column
-                    "time": int(i / 2) - 1,  # compensate for empty rows
-                    "class": class_list[h - 1],  # compensate for length =/= last index
-                    "subject": "SERVICE"
-                }
+					lessons_list.append(new_lesson)
 
-                lessons_list.append(new_lunch_break)
+				if len(subject) == 0 and (int(i / 2) - 1 == 4 or int(i / 2) - 1 == 5):
+					new_lunch_break = {
+						"day": j - 2,  # compensate for first column
+						"time": int(i / 2) - 1,  # compensate for empty rows
+						"class": class_list[h - 1],  # compensate for length =/= last index
+						"subject": "SERVICE"
+					}
+
+					lessons_list.append(new_lunch_break)
+				
+		classes_done.append(class_list[h-1])
 
 with open("lessons_list.json", "w") as fout:
     json.dump(lessons_list, fout)
