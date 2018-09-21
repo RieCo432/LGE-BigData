@@ -11,9 +11,9 @@ teachers = ClassTeacher.modify_teacher_list(ClassTeacher.original_teacher_list)
 for teacher in teachers:
 
     try:
-        current_teacher = teacher[0] + " " + teacher[2]
+        current_teacher = teacher[0] #+ " " + teacher[2]
     except IndexError:
-        current_teacher = teacher[0] + " " + teacher[1]
+        current_teacher = "None" #teacher[0] + " " + teacher[1]
 
     new_teacher_timetable = []
 
