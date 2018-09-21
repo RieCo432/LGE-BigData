@@ -17,9 +17,9 @@ for class_name in ClassClass.class_list:
                 "subject": lesson["subject"],
             }
             try:
-                new_lesson["teacher"] = lesson["teacher"][0] + " " + lesson["teacher"][2]
+                new_lesson["teacher"] = lesson["teacher"][0]
             except IndexError:
-                new_lesson["teacher"] = lesson["teacher"][0] + " " + lesson["teacher"][1]
+                new_lesson["teacher"] = "None"
             except KeyError:
                 # print("KeyError")
                 pass
