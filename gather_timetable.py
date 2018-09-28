@@ -18,6 +18,8 @@ class_list = []
 
 teacher_list = ClassTeacher.modify_teacher_list(ClassTeacher.original_teacher_list)
 
+print(teacher_list)
+
 lessons_list = []
 
 classes_done = []
@@ -67,7 +69,7 @@ for h in range(1, 71 + 1):
                     try:
                         shorted_teacher = teacher[k].text.split()
                         for teacher_name in teacher_list:
-                            if teacher_name[0] == shorted_teacher[0] and teacher_name[1] == shorted_teacher[1]:
+                            if teacher_name[0] == shorted_teacher[0]:
                                 new_lesson["teacher"] = teacher_name
                     except IndexError:
                         new_lesson["teacher"] = "None"
