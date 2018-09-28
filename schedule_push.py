@@ -134,7 +134,7 @@ if PRODUCTION:
 
 else:
 
-    class_name = "1B"
+    class_name = "1B-C-"
     with open(proj_dir + "/classes/timetable_" + class_name + ".json", "r") as fin:
         all_class_lessons = json.load(fin)
 
