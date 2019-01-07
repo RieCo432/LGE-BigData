@@ -15,6 +15,13 @@ from random import randint
 
 PRODUCTION = True
 
+if datetime(2019, 1, 7) < datetime.now() < datetime(2019, 2, 16):
+	vacation = False
+else:
+	vacation = True
+
+# print(vacation)
+
 proj_dir = os.path.dirname(os.path.abspath(__file__))
 
 log_file = open(proj_dir + "/output.log", "a")
@@ -92,7 +99,7 @@ else:
                           datetime(now8.year, now8.month, now8.day, now8.hour, now8.minute, 0),
                           datetime(now9.year, now9.month, now9.day, now9.hour, now9.minute, 0)]
 
-if PRODUCTION:
+if PRODUCTION and not vacation:
     new_job = []
     new_job_index = 0
     for class_name_original in ClassClass.class_list:
@@ -132,7 +139,7 @@ if PRODUCTION:
             #    for job in job_array:
         #    print(str(datetime.now()) + " " + str(scheduler.get_jobs()), file=loop_log)
 
-else:
+elif not PRODUCTION:
 
     class_name = "1B-C-"
     with open(proj_dir + "/classes/timetable_" + class_name + ".json", "r") as fin:
