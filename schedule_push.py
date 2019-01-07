@@ -15,7 +15,13 @@ from random import randint
 
 PRODUCTION = True
 
-if datetime(2019, 1, 7) < datetime.now() < datetime(2019, 2, 16):
+if datetime(2019, 1, 7) <= datetime.now() < datetime(2019, 2, 16):
+	vacation = False
+elif datetime(2019, 2, 25) <= datetime.now() < datetime(2019, 4, 6):
+	vacation = False
+elif datetime(2019, 4, 23) <= datetime.now() < datetime(2019, 5, 25):
+	vacation = False
+elif datetime(2019, 6, 3) <= datetime.now() < datetime(2019, 7, 13):
 	vacation = False
 else:
 	vacation = True
